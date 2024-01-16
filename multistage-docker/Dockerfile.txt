@@ -1,0 +1,12 @@
+# Stage 1: Build the application
+FROM openjdk:11 AS build
+RUN mkdir -p /app/source
+COPY . /app/source
+WORKDIR /app/source
+RUN ./mvnw clean package -DskipTests
+
+# Stage 2: Create a JRE
+FROM build
+COPY --from=build /app/source/target/*.jar /app/app.jar
+EXPOSE 8080
+CMD ["java", "-jar", "/app/app.jar"]
